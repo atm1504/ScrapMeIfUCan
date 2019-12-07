@@ -1,9 +1,23 @@
 import scrapy
+from ..items import QuotetutorialItem
 
 class QuoteSpider(scrapy.Spider):
     name="quotes"
-    start_urls = ["https://github.com/somenath1435"]
+    start_urls = ["http://quotes.toscrape.com/"]
 
     def parse(self, response):
-        title = response.css(".d-block.overflow-hidden::text").extract()
-        yield {"titletext": title}
+        items = QuotetutorialItem()
+
+        all_div_quotes = response.css("div.quote")
+
+        for quotes in all_div_quotes:
+            title = quotes.css("span.text::text").extract()
+            author = quotes.css("span small.author::text").extract()
+            tag = quotes.css(".tag::text").extract()
+
+            items["title"]=title
+            items["author"]=author
+            items["tag"]= tag
+
+            # yield {"title": title, "author": author}
+            yield items
